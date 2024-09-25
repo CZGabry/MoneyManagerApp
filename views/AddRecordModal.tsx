@@ -27,47 +27,39 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({
   const [recordType, setRecordType] = useState<'credit' | 'debt'>('credit');
   const [recordCategory, setRecordCategory] = useState<'asset' | 'liquidity'>('asset');
 
-  // Check if we're in edit mode by checking if existingRecord is passed
   const isEditMode = !!existingRecord;
 
-  // Reset form fields when modal is opened for adding a new record (when existingRecord is null)
   useEffect(() => {
     if (!existingRecord && modalVisible) {
-      // Add mode: reset form fields
-      setNewRecordName('');
-      setNewRecordValue('');
-      setRecordType('credit'); // Default to credit
-      setRecordCategory('asset'); // Default to asset
+      resetModal();
     }
   }, [modalVisible, existingRecord]);
 
-  // Use useEffect to prefill form fields if an existingRecord is passed (edit mode)
   useEffect(() => {
     if (existingRecord) {
-      // Edit mode: prefill the form with existing record details
       setNewRecordName(existingRecord.name);
-      setNewRecordValue(String(Math.abs(existingRecord.value))); // Always show the positive value
+      setNewRecordValue(String(Math.abs(existingRecord.value)));
       setRecordType(existingRecord.nature);
       setRecordCategory(existingRecord.category);
     }
   }, [existingRecord]);
-
+  
   const handleSave = () => {
     if (newRecordName && newRecordValue) {
       const recordValue = Number(newRecordValue);
       addRecord(newRecordName, recordValue, recordType, recordCategory);
-      // Reset the form fields after saving
+      resetModal();
+      setModalVisible(false);
+    }
+  };
+    const resetModal = () => {
       setNewRecordName('');
       setNewRecordValue('');
       setRecordType('credit');
       setRecordCategory('asset');
-      setModalVisible(false);
-    }
-  };
-
+  }
   const handleValueChange = (value: string) => {
-    // Ensure the value is always positive
-    const positiveValue = value.replace(/[^0-9.]/g, ''); // Allow only numbers and period
+    const positiveValue = value.replace(/[^0-9.]/g, '');
     setNewRecordValue(positiveValue);
   };
 
@@ -81,34 +73,29 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({
       <View style={styles.modalView}>
         <Text style={styles.modalText}>{isEditMode ? 'Edit Record' : 'Add New Record'}</Text>
 
-        {/* Record Name */}
         <TextInput
           style={styles.input}
           placeholder="Record Name"
           value={newRecordName}
           onChangeText={setNewRecordName}
-          editable={!isEditMode} // Name field is non-editable in edit mode
+          editable={!isEditMode}
         />
 
-        {/* Record Value */}
         <TextInput
           style={styles.input}
           placeholder="Record Value"
           keyboardType="numeric"
           value={newRecordValue}
-          onChangeText={handleValueChange} // Handle input change to allow only positive numbers
+          onChangeText={handleValueChange}
         />
-
-        {/* Only show Type and Category if NOT in edit mode */}
         {!isEditMode && (
           <>
-            {/* Toggle between Credit and Debt */}
             <View style={styles.buttonContainer}>
               <Button
                 title="Credit"
                 onPress={() => {
                   setRecordType('credit');
-                  setRecordCategory('asset'); // Automatically set to asset when credit is selected
+                  setRecordCategory('asset'); 
                 }}
                 color={recordType === 'credit' ? 'green' : 'gray'}
               />
@@ -118,8 +105,6 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({
                 color={recordType === 'debt' ? 'red' : 'gray'}
               />
             </View>
-
-            {/* Only show Category if recordType is credit */}
             {recordType === 'credit' && (
               <View style={styles.buttonContainer}>
                 <Button

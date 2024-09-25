@@ -18,7 +18,6 @@ const HomeComponent: React.FC = () => {
     backgroundColor: isDarkMode ? '#333' : '#FFF',
   };
 
-  // Load records from AsyncStorage when the app starts
   useEffect(() => {
     const loadRecords = async () => {
       try {
@@ -33,7 +32,6 @@ const HomeComponent: React.FC = () => {
     loadRecords();
   }, []);
 
-  // Save records to AsyncStorage whenever records state changes
   useEffect(() => {
     const saveRecords = async () => {
       try {
@@ -45,54 +43,49 @@ const HomeComponent: React.FC = () => {
     saveRecords();
   }, [records]);
 
-  // Calculate totals
   const total = records
-    .filter((record) => record.nature !== 'debt') // Exclude debts
+    .filter((record) => record.nature !== 'debt')
     .reduce((acc, record) => acc + record.value, 0);
 
-  const netTotal = records.reduce((acc, record) => acc + record.value, 0); // Include debts and credits
+  const netTotal = records.reduce((acc, record) => acc + record.value, 0);
 
   const totalAssets = records
-    .filter((record) => record.category === 'asset' && record.nature !== 'debt') // Only assets and no debts
+    .filter((record) => record.category === 'asset' && record.nature !== 'debt')
     .reduce((acc, record) => acc + record.value, 0);
 
   const totalLiquidity = records
-    .filter((record) => record.category === 'liquidity' && record.nature !== 'debt') // Only liquidity and no debts
+    .filter((record) => record.category === 'liquidity' && record.nature !== 'debt')
     .reduce((acc, record) => acc + record.value, 0);
 
   const totalDebt = records
-    .filter((record) => record.nature === 'debt') // Only debts
+    .filter((record) => record.nature === 'debt')
     .reduce((acc, record) => acc + record.value, 0);
 
   const totalLiquidityMinusDebt = totalLiquidity - Math.abs(totalDebt);
   // Add or edit record
   const addOrEditRecord = (name: string, value: number, nature: 'credit' | 'debt', category: 'asset' | 'liquidity') => {
-    const recordValue = nature === 'debt' ? -Math.abs(value) : Math.abs(value); // Negative for debt, positive for credit
+    const recordValue = nature === 'debt' ? -Math.abs(value) : Math.abs(value);
     const newRecord = { name, value: recordValue, nature, category };
 
     if (selectedRecordIndex !== null) {
-      // Edit mode
       const updatedRecords = [...records];
       updatedRecords[selectedRecordIndex] = newRecord;
       setRecords(updatedRecords);
     } else {
-      // Add mode
       setRecords([...records, newRecord]);
     }
 
-    setSelectedRecordIndex(null); // Reset after edit or add
+    setSelectedRecordIndex(null);
   };
 
-  // Remove record from the list
   const removeRecord = (index: number) => {
     const updatedRecords = records.filter((_, i) => i !== index);
     setRecords(updatedRecords);
   };
 
-  // Handle edit button click
   const onEditRecord = (index: number) => {
-    setSelectedRecordIndex(index); // Track selected record for editing
-    setModalVisible(true); // Open modal for editing
+    setSelectedRecordIndex(index);
+    setModalVisible(true);
   };
 
   return (
@@ -111,17 +104,16 @@ const HomeComponent: React.FC = () => {
         <Button
         title="Add New Record"
         onPress={() => {
-          setSelectedRecordIndex(null); // Reset the index for a new record
-          setModalVisible(true);        // Open the modal in add mode
+          setSelectedRecordIndex(null); 
+          setModalVisible(true);       
         }}
       />
 
-        {/* Render the AddRecordModal and pass necessary props */}
         <AddRecordModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
           addRecord={addOrEditRecord}
-          existingRecord={selectedRecordIndex !== null ? records[selectedRecordIndex] : null} // Pass the selected record to edit
+          existingRecord={selectedRecordIndex !== null ? records[selectedRecordIndex] : null}
         />
       </View>
     </SafeAreaView>

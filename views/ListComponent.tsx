@@ -4,14 +4,13 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 interface ListComponentProps {
   records: MoneyRecord[];
   removeRecord: (index: number) => void;
-  onEditRecord: (index: number) => void; // New function to trigger edit
+  onEditRecord: (index: number) => void;
 }
 
 const ListComponent: React.FC<ListComponentProps> = ({ records, removeRecord, onEditRecord }) => {
   const renderItem = ({ item, index }: { item: MoneyRecord; index: number }) => {
     let textStyle = {};
 
-    // Apply underline with color based on nature and category
     if (item.nature === 'credit' && item.category === 'asset') {
       textStyle = { borderBottomWidth: 2, borderBottomColor: 'blue' };
     } else if (item.nature === 'credit' && item.category === 'liquidity') {
@@ -27,7 +26,6 @@ const ListComponent: React.FC<ListComponentProps> = ({ records, removeRecord, on
             {item.name} - {Math.abs(item.value)}€ ({item.nature === 'credit' ? 'Credit' : 'Debt'}
             {item.nature === 'credit' ? `, ${item.category}` : ''}) {/* Hide category for debts */}
           </Text>
-          {/* Remove button */}
           <TouchableOpacity onPress={() => removeRecord(index)} style={styles.removeButton}>
             <Text style={styles.removeButtonText}>X</Text>
           </TouchableOpacity>

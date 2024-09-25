@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 
 interface TotalComponentProps {
   total: number;
-  title: string; // Add a title prop to differentiate totals
+  title: string;
 }
 
 const TotalComponent: React.FC<TotalComponentProps> = ({ total, title }) => {
